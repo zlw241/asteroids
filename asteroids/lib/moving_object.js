@@ -8,8 +8,9 @@ function MovingObject(options) {
 }
 
 MovingObject.prototype.draw = function(ctx) {
-  color = 'rgb(0, ' + Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255) + ')';
-  ctx.fillStyle = color;
+  // color = 'rgb(0, ' + Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255) + ')';
+  //let color = 'blue';
+  ctx.fillStyle = this.color;
   ctx.beginPath();
   this.centerX = this.pos[0];
   this.centerY = this.pos[1];
@@ -55,14 +56,6 @@ MovingObject.prototype.isCollidedWith = function(otherObject) {
   }
   return false;
 };
-
-const colors = [];
-for (var i = 0; i < 6; i++) {
-      for (var j = 0; j < 6; j++) {
-        colors.push('rgb(0, ' + Math.floor(255 - 42.5 * i) + ', ' + Math.floor(255 - 42.5 * j) + ')');
-      }
-}
-
 
 
 // MovingObject.prototype = function collideWith(otherObject) {

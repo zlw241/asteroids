@@ -80,8 +80,9 @@ function MovingObject(options) {
 }
 
 MovingObject.prototype.draw = function(ctx) {
-  color = 'rgb(0, ' + Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255) + ')';
-  ctx.fillStyle = color;
+  // color = 'rgb(0, ' + Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255) + ')';
+  //let color = 'blue';
+  ctx.fillStyle = this.color;
   ctx.beginPath();
   this.centerX = this.pos[0];
   this.centerY = this.pos[1];
@@ -128,14 +129,6 @@ MovingObject.prototype.isCollidedWith = function(otherObject) {
   return false;
 };
 
-const colors = [];
-for (var i = 0; i < 6; i++) {
-      for (var j = 0; j < 6; j++) {
-        colors.push('rgb(0, ' + Math.floor(255 - 42.5 * i) + ', ' + Math.floor(255 - 42.5 * j) + ')');
-      }
-}
-
-
 
 // MovingObject.prototype = function collideWith(otherObject) {
 //
@@ -159,7 +152,7 @@ const Util = {
     const deg = 2 * Math.PI * Math.random();
     return Util.scale([Math.sin(deg), Math.cos(deg)], length);
   },
-  
+
   // Scale the length of a vector by the given amount.
   scale (vec, m) {
     return [vec[0] * m, vec[1] * m];
@@ -176,20 +169,28 @@ module.exports = Util;
 const Util = __webpack_require__(1);
 const MovingObject = __webpack_require__(0);
 const Asteroid = __webpack_require__(3);
+const Ship = __webpack_require__(5);
 
 
 Util.inherits(Asteroid, MovingObject);
+Util.inherits(Ship, MovingObject);
 
 function Game () {
   this.DIM_X = window.innerWidth;
   this.DIM_Y = window.innerHeight;
-  this.NUM_ASTEROIDS = 25;
+  this.NUM_ASTEROIDS = 20;
 
   this.addAsteroids();
+  this.addShip();
 }
 
 Game.prototype.randomPosition = function () {
   return [Math.random() * this.DIM_X, Math.random() * this.DIM_Y];
+};
+
+Game.prototype.addShip = function () {
+  let pos = [this.DIM_X / 2, this.DIM_Y / 2];
+  this.ship = new Ship({pos: pos});
 };
 
 Game.prototype.addAsteroids = function () {
@@ -207,12 +208,14 @@ Game.prototype.draw = function (ctx) {
   this.asteroids.forEach((asteroid) => {
     asteroid.draw(ctx);
   });
+  this.ship.draw(ctx);
 };
 
 Game.prototype.moveObjects = function() {
   this.asteroids.forEach((asteroid) => {
     asteroid.move();
   });
+  this.ship.move();
 };
 
 Game.prototype.checkCollisions = function() {
@@ -230,6 +233,33 @@ Game.prototype.checkCollisions = function() {
     }
   }
 };
+
+Game.prototype.power = function(impulse) {
+  if (impulse === 'a') {
+    if (this.ship.vel[0] > -10) {
+      this.ship.vel[0] -= 0.5;
+    }
+  }
+
+  if (impulse === 'd') {
+    if (this.ship.vel[0] < 10) {
+      this.ship.vel[0] += 0.5;
+    }
+  }
+
+  if (impulse === 'w') {
+    if (this.ship.vel[1] > -10) {
+      this.ship.vel[1] -= 0.5;
+    }
+  }
+
+  if (impulse === 's') {
+    if (this.ship.vel[1] < 10) {
+      this.ship.vel[1] += 0.5;
+    }
+  }
+};
+
 
 // Game.prototype.remove = function(asteroid) {
 //
@@ -250,7 +280,7 @@ function Asteroid(options) {
   this.RADIUS = 20;
   options.color = this.COLOR;
   options.radius = this.RADIUS;
-  options.vel = Util.randomVec(5);
+  options.vel = Util.randomVec(10);
   MovingObject.call(this, options);
 }
 
@@ -265,6 +295,7 @@ const Game = __webpack_require__(2);
 
 function GameView() {
   this.setupContext();
+  this.bindKeyHandlers();
 }
 
 GameView.prototype.setupContext = function() {
@@ -279,12 +310,59 @@ GameView.prototype.animate = function() {
   window.setInterval(() => {
     this.game.moveObjects();
     this.game.draw(this.ctx);
-    this.game.checkCollisions();
+    //this.game.checkCollisions();
   }, 1000/60);
 };
 
+GameView.prototype.bindKeyHandlers = function () {
+  key('a', () => this.game.power('a'));
+  key('s', () => this.game.power('s'));
+  key('d', () => this.game.power('d'));
+  key('w', () => this.game.power('w'));
+};
+
 const g = new GameView();
+//g.bindKeyHandlers();
 g.animate();
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const MovingObject = __webpack_require__(0);
+
+function Ship (options) {
+  this.COLOR = 'red';
+  this.RADIUS = 20;
+  options.color = this.COLOR;
+  options.radius = this.RADIUS;
+  options.vel = [0, 0];
+  MovingObject.call(this, options);
+}
+
+Ship.prototype.draw = function () {
+  ctx.strokeStyle = this.color;
+  ctx.beginPath();
+  this.centerX = this.pos[0];
+  this.centerY = this.pos[1];
+  ctx.arc(
+    this.centerX,
+    this.centerY,
+    this.radius,
+    0,
+    2 * Math.PI,
+    false
+  );
+  ctx.fill();
+};
+
+// Ship.prototype.power = function (impulse) {
+//   this.vel[0] += impulse[0];
+//   this.vel[1] += impulse[1];
+// };
+
+module.exports = Ship;
 
 
 /***/ })

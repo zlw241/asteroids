@@ -1,20 +1,28 @@
 const Util = require('./utils.js');
 const MovingObject = require('./moving_object.js');
 const Asteroid = require('./asteroid.js');
+const Ship = require('./ship.js');
 
 
 Util.inherits(Asteroid, MovingObject);
+Util.inherits(Ship, MovingObject);
 
 function Game () {
   this.DIM_X = window.innerWidth;
   this.DIM_Y = window.innerHeight;
-  this.NUM_ASTEROIDS = 25;
+  this.NUM_ASTEROIDS = 20;
 
   this.addAsteroids();
+  this.addShip();
 }
 
 Game.prototype.randomPosition = function () {
   return [Math.random() * this.DIM_X, Math.random() * this.DIM_Y];
+};
+
+Game.prototype.addShip = function () {
+  let pos = [this.DIM_X / 2, this.DIM_Y / 2];
+  this.ship = new Ship({pos: pos});
 };
 
 Game.prototype.addAsteroids = function () {
@@ -32,12 +40,14 @@ Game.prototype.draw = function (ctx) {
   this.asteroids.forEach((asteroid) => {
     asteroid.draw(ctx);
   });
+  this.ship.draw(ctx);
 };
 
 Game.prototype.moveObjects = function() {
   this.asteroids.forEach((asteroid) => {
     asteroid.move();
   });
+  this.ship.move();
 };
 
 Game.prototype.checkCollisions = function() {
@@ -55,6 +65,33 @@ Game.prototype.checkCollisions = function() {
     }
   }
 };
+
+Game.prototype.power = function(impulse) {
+  if (impulse === 'a') {
+    if (this.ship.vel[0] > -10) {
+      this.ship.vel[0] -= 0.5;
+    }
+  }
+
+  if (impulse === 'd') {
+    if (this.ship.vel[0] < 10) {
+      this.ship.vel[0] += 0.5;
+    }
+  }
+
+  if (impulse === 'w') {
+    if (this.ship.vel[1] > -10) {
+      this.ship.vel[1] -= 0.5;
+    }
+  }
+
+  if (impulse === 's') {
+    if (this.ship.vel[1] < 10) {
+      this.ship.vel[1] += 0.5;
+    }
+  }
+};
+
 
 // Game.prototype.remove = function(asteroid) {
 //
