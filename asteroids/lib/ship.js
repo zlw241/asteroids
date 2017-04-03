@@ -1,4 +1,5 @@
 const MovingObject = require('./moving_object.js');
+const Bullet = require('./bullet.js');
 
 function Ship (options) {
   this.COLOR = 'red';
@@ -23,6 +24,11 @@ Ship.prototype.draw = function () {
     false
   );
   ctx.fill();
+};
+
+Ship.prototype.fireBullet = function() {
+  const bulletVel = [this.vel[0] * 2, this.vel[1] * 2];
+  const bullet = new Bullet({pos: this.pos, vel: bulletVel});
 };
 
 // Ship.prototype.power = function (impulse) {

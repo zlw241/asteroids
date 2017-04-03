@@ -17,7 +17,7 @@ GameView.prototype.animate = function() {
   window.setInterval(() => {
     this.game.moveObjects();
     this.game.draw(this.ctx);
-    //this.game.checkCollisions();
+    // this.game.checkCollisions();
   }, 1000/60);
 };
 
@@ -26,8 +26,9 @@ GameView.prototype.bindKeyHandlers = function () {
   key('s', () => this.game.power('s'));
   key('d', () => this.game.power('d'));
   key('w', () => this.game.power('w'));
+  key('space', () => this.game.fireBullet());
 };
 
 const g = new GameView();
-//g.bindKeyHandlers();
+// g.bindKeyHandlers();
 g.animate();
